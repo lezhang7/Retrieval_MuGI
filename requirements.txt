@@ -1,4 +1,4 @@
-tqdm=
+tqdm
 openai
 tiktoken
 pyserini
