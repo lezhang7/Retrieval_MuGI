@@ -1,8 +1,8 @@
 # MuGI: Multi-Text Generation Intergration for IR
 
-Code for paper "[[MuGI: Enhancing Information Retrieval through Multi-Text Generation Intergration with Large Language Models](https://arxiv.org/abs/2401.06311)](https://arxiv.org/abs/2401.06311)"
+Code for paper [MuGI: Enhancing Information Retrieval through Multi-Text Generation Intergration with Large Language Models](https://arxiv.org/abs/2401.06311)
 
-This project aims to explore generated documents for enhanced IR with LLMs.
+This project aims to explore generated documents for enhanced IR with LLMs. We enhance BM25 to surpass strong dense retriever on many datasets.
 
 
 ## News
@@ -75,17 +75,12 @@ rerank_score = utils.evalute_dict(rerank_result,'dl19-passage')
 print(rerank_score)
 ```
 
-
-
 ## Evaluation on Benchmarks
 
-1. **Download generated documents by running**
-
-   `bash download.sh`
-
-2. Run evaluation on all benchmarks (modify `data_list` in mugi.py )
-
-​	`		python mugi.py --mode concat `
+```python
+bash download.sh   # Download generated documents  
+python mugi.py --mode concat # run mugi pipeline on all datasets, could modify data_list in mugi.py for spefic dataset
+```
 
 Below are the results (average nDCG@10) of our preliminary experiments 
 
