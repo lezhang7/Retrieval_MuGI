@@ -11,45 +11,12 @@ class PromptTemplate():
         pass
     def template(self, query, document=None, type='summarization'):
         
-        if type=='sum':
-            return PromptTemplate.get_prefix_prompt_sum(query, document)
-        elif type=='sa':
-            return PromptTemplate.get_prefix_prompt_short_answer(query, document)
-        elif type=='gen':
-            return PromptTemplate.get_prefix_prompt_pseudo_doc(query, document)
-        elif type=='gen_v2':
-            return PromptTemplate.get_prefix_prompt_pseudo_doc_v2(query, document)
-        elif type=='gen_v3':
-            return PromptTemplate.get_prefix_prompt_pseudo_doc_v3(query, document)
-        elif type == 'rj': # relevance judgement
-            return PromptTemplate.get_relevance_judgement(query, document)
+        if type=='gen':
+            return PromptTemplate.get_prefix_prompt_pseudo_doc_zs(query, document)
         else:
             raise NotImplementedError(f"template type {type} is not implemented.")
         # implement other templates here
-
-    @staticmethod
-    def get_prefix_prompt_rank(query, documents:List[str]):
-        num = len(documents)
-        messages = [{'role': 'system',
-             'content': "You are RankGPT, an intelligent assistant that can rank passages based on their relevancy to the query."},
-            {'role': 'user',
-             'content': f"I will provide you with {num} passages, each indicated by number identifier []. \nRank the passages based on their relevance to query: {query}."},
-            {'role': 'assistant', 'content': 'Okay, please provide the passages.'},]
-        for idx,document in enumerate(documents):
-            messages.append({'role': 'user', 'content': f"[{idx}] {document}"})
-            messages.append({'role': 'assistant', 'content': f'Received passage [{idx}].'})
-        messages.append({'role': 'user', 'content': f"Search Query: {query}. \nRank the {num} passages above based on their relevance to the search query. The passages should be listed in descending order using identifiers. The most relevant passages should be listed first. The output format should be [] > [], e.g., [1] > [2]. Only response the ranking results, do not say any word or explain."})
-
-        return messages
         
-
-    
-    @staticmethod
-    def get_prefix_prompt_sum(query, document):
-        return [{'role': 'system',
-                'content': "You are Summarizer Pro, a specialized assistant for summarizing documents. Focus on extracting and summarizing information from a passage. Your responses should be concise summaries without extra words or explanations."},
-                {'role': 'assistant', 'content': 'Understood. Please share the document.'},
-                {'role': 'user', 'content': f"Here is the document: {document}. Summarize the key points: "}]
     @staticmethod
     def get_prefix_prompt_short_answer(query, document=None):
         return [{'role': 'user', 'content': f"{query}, one sentence answering the question: "}]
@@ -74,55 +41,6 @@ class PromptTemplate():
                     "role": "assistant",
                     "content": "Sure, here's a passage relevant to the query:"
                 }]
-    @staticmethod
-    def get_prefix_prompt_streamline(query,document): #dl19 ndcg 100: 72.12 @10 1k: 74.16 ndcg@10  
-        return [
-                {
-                    "role": "system",
-                    "content": "You are StreamlinePro. Plesae remove the redudant sentence that is not relevant to the query. You should only delete without other operations."
-                },
-                {
-                    "role": "user",
-                    "content": "For example: Given the query 'how long is the life cycle of a flea'. The redudant document is:: 'The life cycle of a flea typically lasts around 2-3 months, although it can vary depending on environmental conditions. Fleas undergo complete metamorphosis, which consists of four stages: egg, larva, pupa, and adult. The entire life cycle can be completed in as little as 2 weeks under ideal conditions. Flea eggs are laid on the host animal and then fall off into the environment, where they hatch into larvae. The larvae feed on organic matter and develop into pupae, which eventually emerge as adult fleas. Adult fleas then seek a host to feed on and reproduce, starting the cycle anew. It's important to note that proper flea control measures are necessary to prevent infestations and ensure the well-being of both pets and humans.' The streamlined version is: 'The life cycle of a flea typically lasts around 2-3 months, although it can vary depending on environmental conditions. The entire life cycle can be completed in as little as 2 weeks under ideal conditions.'."
-                },
-                {
-                    "role": "user",
-                    "content": f"Now, Given the query '{query}', please streamline the document '{document}'"
-                },
-                {
-                    "role": "assistant",
-                    "content": "The streamlined version is:"
-                }]
-    @staticmethod
-    def get_prefix_prompt_streamline_v2(query,document): #dl19 ndcg 100:  @10 1k:  ndcg@10  
-        return [
-                {
-                    "role": "user",
-                    "content": f"""Plesae remove the redudant sentence that is not relevant to the query. You should only delete without other operations.\nFor example given the query: 'how long is life cycle of flea'.\nThe redudant document is:"The life cycle of a flea typically lasts around 2-3 months, although it can vary depending on environmental conditions. Fleas undergo complete metamorphosis, which consists of four stages: egg, larva, pupa, and adult. The entire life cycle can be completed in as little as 2 weeks under ideal conditions. Flea eggs are laid on the host animal and then fall off into the environment, where they hatch into larvae. The larvae feed on organic matter and develop into pupae, which eventually emerge as adult fleas. Adult fleas then seek a host to feed on and reproduce, starting the cycle anew. It's important to note that proper flea control measures are necessary to prevent infestations and ensure the well-being of both pets and humans."\nThe streamlined version is:"The life cycle of a flea typically lasts around 2-3 months, although it can vary depending on environmental conditions. The entire life cycle can be completed in as little as 2 weeks under ideal conditions."\n\nNow, Given the query: '{query}'please streamline the document:'{document}'"""},
-        
-                {
-                    "role": "assistant",
-                    "content": "The streamlined version is:"
-                }]
-
-
-
-    @staticmethod
-    def get_relevance_judgement(query, document):
-        TEMPLATE = """
-        Query:
-
-        {query}
-
-        Content:
-
-        {content}
-
-        Did the content directly answer the query? If yes, give me the exact sentence(s) without additional content. If no, just answer "irrelevant".
-        """
-        prompt = TEMPLATE.format(query=query, content=document)
-        return  [{'role': 'user', 'content': prompt}]
-    
 
 def evalute_dict(rank_dict:Dict[str,List[str]],the_topic:str): 
     """
@@ -140,6 +58,11 @@ def evalute_dict(rank_dict:Dict[str,List[str]],the_topic:str):
                 rank += 1
     return EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', the_topic, temp_file])
 
+def evaluate_bm25(rank_results,the_topic):
+    temp_file = tempfile.NamedTemporaryFile(delete=False).name
+    utils.write_eval_file(rank_results, temp_file)
+    bm25_rank_score=EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', the_topic, temp_file])
+    return bm25_rank_score
 
 # json load function
 def load_json(path):
@@ -160,3 +83,13 @@ def display_args(args):
     max_len = max(len(arg) for arg in vars(args))  # 找到最长的键名长度
     for arg, value in vars(args).items():
         print(f"  {arg.ljust(max_len)}: {value}")
+
+def write_eval_file(rank_results, file):
+    with open(file, 'w') as f:
+        for i in range(len(rank_results)):
+            rank = 1
+            hits = rank_results[i]['hits']
+            for hit in hits:
+                f.write(f"{hit['qid']} Q0 {hit['docid']} {rank} {hit['score']} rank\n")
+                rank += 1
+    return True

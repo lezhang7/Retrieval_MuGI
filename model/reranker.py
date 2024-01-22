@@ -63,17 +63,7 @@ class Reranker():
                 # normalize embeddings
                 embeddings = F.normalize(embeddings, p=2, dim=1)
             return embeddings
-        elif "mistral" in self.model_name:
-            #intfloat/e5-mistral-7b-instruct
-            batch_dict = self.tokenizer(input_texts, max_length=4096 - 1, return_attention_mask=False, padding=False, truncation=True)
-            batch_dict['input_ids'] = [input_ids + [self.tokenizer.eos_token_id] for input_ids in batch_dict['input_ids']]
-            batch_dict = self.tokenizer.pad(batch_dict, padding=True, return_attention_mask=True, return_tensors='pt')       
-            batch_dict = {key: val.to('cuda') for key, val in batch_dict.items()}
-            with torch.no_grad():
-                outputs = self.model(**batch_dict)
-            embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-            embeddings = F.normalize(embeddings, p=2, dim=1)
-            return embeddings
+
         elif "ember-v1" in self.model_name:
             #llmrails/ember-v1
             batch_dict = self.tokenizer(input_texts, max_length=512, padding=True, truncation=True, return_tensors='pt').to('cuda')

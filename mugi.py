@@ -32,11 +32,11 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--rerank', action='store_true', help='whether to rerank on original bm25')
-    # generation setting
+    # documents generation setting
     parser.add_argument('--gen_model', type=str, default='openai', help='pseudo reference generation model')
     parser.add_argument('--doc_gen', type=int, default=5, help='number of generated documents')
     parser.add_argument('--output_path', type=str, default='./exp', help='output path')
-    # parse retrieval setting
+    # sparse retrieval setting
     parser.add_argument('--repeat_times', '-t', default=None, type=int)
     parser.add_argument('--adaptive_times', '-at', default=6,type=int)
     parser.add_argument('--topk', type=int, default=100, help='BM25 retrieved topk documents')
@@ -187,7 +187,7 @@ def run_retriever(topics, searcher, qrels=None, k=100, qid=None):
 def main(args):
     data_list = ['dl20', 'dl19', 'covid', 'touche', 'dbpedia', 'scifact', 'signal', 'news', 'robust04']
     reranker_model = get_reranker(model_name = args.rank_model, mode = 'query' if args.rerank else args.mode) 
-    evaluation_save_path = os.path.join(args.output_path, f"evaluation_results_{'rerank' if args.rerank else args.mode}.json")
+    evaluation_save_path = os.path.join('results',f"evaluation_results_{'rerank' if args.rerank else args.mode}.json")
     if os.path.exists(evaluation_save_path):
         logging.info(f"Loading evaluation results from {evaluation_save_path}")
         evaluation_results = utils.load_json(evaluation_save_path)
@@ -206,6 +206,7 @@ def main(args):
         # Retrieve or Loadding passages using pyserini BM25.
         
         if args.rerank:
+            # rerank on valiina BM25 Top 100     
             searcher = LuceneSearcher.from_prebuilt_index(benchmark.THE_INDEX[data])
             topics = get_topics(benchmark.THE_TOPICS[data] if data != 'dl20' else 'dl20')
             qrels = get_qrels(benchmark.THE_TOPICS[data])
@@ -216,7 +217,7 @@ def main(args):
             logging.info(f"Saving evaluation results to {evaluation_save_path}")
             utils.dump_json(evaluation_results, evaluation_save_path)
         else:
-            # perform MuGI
+            # rerank on MuGI+BM25 Top 100  
             bm25_refine_output_path = os.path.join(args.output_path, data+'_bm25_refine.json')
             if not os.path.exists(bm25_refine_output_path):
                 logging.info(f"No local results found for {data}, generating psuedo references and retrieve passages using pyserini BM25, saving to {bm25_refine_output_path}.")
@@ -229,6 +230,7 @@ def main(args):
                         topics = {key:topics[key] for key in list(topics)[:2]}
                     rank_results = bm25_with_psuedo_ref(args, topics, searcher, qrels, data)
                     utils.dump_json(rank_results, bm25_refine_output_path)
+                    
                 except Exception as e:
                     print(f'Failed to retrieve passages for {data}')
                     print(f"Error: {e}")
@@ -236,6 +238,11 @@ def main(args):
             else: 
                 logging.info(f"Loading local results for {data} from {bm25_refine_output_path}.")
                 rank_results = utils.load_json(bm25_refine_output_path)
+
+
+            bm25_rank_score = utils.evaluate_bm25(rank_results, benchmark.THE_TOPICS[data])
+            logging.info(f'BM25 nDCG@10 on {data} is {bm25_rank_score}')
+
             # Dense retrieval 
             logging.info(f'Rerank top {args.dense_topk} documents on {data} using {args.rank_model}')
             rerank_result = reranker_model.rerank(rank_results,args.dense_topk)
