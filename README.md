@@ -54,14 +54,16 @@ import utils
 from pyserini.search import LuceneSearcher, get_topics, get_qrels
 searcher = LuceneSearcher.from_prebuilt_index('msmarco-v1-passage')
 qrels = get_qrels('dl19-passage')
+repetition_ratio=5
+articles_num=3
 for key in topics:
       query = topics[key]['title']
-      gen_ref = ' '.join(topics[key]['gen_cand_gpt4'][:3])
-      repetition_times = (len(gen_ref)//len(query))//5
+      gen_ref = ' '.join(topics[key]['gen_cand_gpt4'][:articles_num])
+      repetition_times = (len(gen_ref)//len(query))//repetition_ratio
       topics[key]['enhanced_query'] = (query + ' ')*repetition_times + gen_ref
 bm25_rank_results = run_retriever_mugi(topics, searcher, qrels, k=100)
 # eval nDCG@10
-rank_score=utils.evaluate_bm25(bm25_rank_results)
+rank_score=utils.evaluate_bm25(bm25_rank_results,'dl19-passage')
 print(rank_score)
 ```
 
