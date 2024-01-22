@@ -10,6 +10,10 @@ This project aims to explore generated documents for enhanced IR with LLMs. We e
 - **[2024.01.12]** Our paper is now available at https://arxiv.org/abs/2401.06311
 
 ## Quick example
+Install requirements
+```python
+pip install -r requirements.txt
+```
 
 Below defines a query:
 
@@ -69,7 +73,7 @@ print(rank_score)
 
 or **re-rank using dense retrieval models**:
 
-```
+```python
 from model import get_language_model, get_reranker
 reranker_model = get_reranker(model_name = 'all-mpnet-base-v2', mode = 'concat')
 rerank_result = reranker_model.rerank(bm25_rank_results,100)
