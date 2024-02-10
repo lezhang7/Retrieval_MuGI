@@ -1,9 +1,11 @@
 
-
+__pycache__/
 /workspace/
 /results/
+/results_old/
 /exp/
 
 *.ipynb
 bm25_abalation.py
 bm25_eval.py
+
