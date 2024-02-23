@@ -105,7 +105,7 @@ python mugi.py --llm $llm --irmode $irmode
 
 Below are the results (average nDCG@10) of our preliminary experiments 
 
-### ![Screenshot 2024-01-22 at 12.56.51 PM](https://github.com/lezhang7/Retrieval_MuGI/asset/performance.png)
+### ![Screenshot 2024-01-22 at 12.56.51 PM](https://github.com/lezhang7/Retrieval_MuGI/blob/main/asset/performance.png)
 
 ## Cite
 
