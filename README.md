@@ -4,6 +4,10 @@ Code for paper [MuGI: Enhancing Information Retrieval through Multi-Text Generat
 
 This project aims to explore generated documents for enhanced IR with LLMs. We enhance BM25 to surpass strong dense retriever on many datasets.
 
+***MuGI surpasses all current query-rewriting methods, enhancing BM25 and outperforming E5-Mistral-7b-instruct in out-of-distribution (OOD) evaluations. Furthermore, it boosts a 110M model to achieve state-of-the-art (SOTA) results in in-distribution (IID) assessments**.*
+
+![Screenshot 2024-01-22 at 12.56.51 PM](https://github.com/lezhang7/Retrieval_MuGI/blob/main/asset/performance.png)
+
 
 ## News
 
@@ -101,18 +105,14 @@ To **generated refences with open-source LLMs**, selectiong  `llm` in `[01-ai/Yi
 python mugi.py --llm $llm --irmode $irmode 
 ```
 
-------
 
-Below are the results (average nDCG@10) of our preliminary experiments 
-
-### ![Screenshot 2024-01-22 at 12.56.51 PM](https://github.com/lezhang7/Retrieval_MuGI/blob/main/asset/performance.png)
 
 ## Cite
 
 ```latex
 @misc{zhang2024mugi,
-      title={MuGI: Enhancing Information Retrieval through Multi-Text Generation Intergration with Large Language Models}, 
-      author={Le Zhang and Yihong Wu},
+      title={MuGI: Enhancing Information Retrieval through Multi-Text Generation Integration with Large Language Models}, 
+      author={Le Zhang and Qian Yang and Yihong Wu},
       year={2024},
       eprint={2401.06311},
       archivePrefix={arXiv},
