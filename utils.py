@@ -63,7 +63,7 @@ def evalute_dict(rank_dict:Dict[str,List[str]],the_topic:str):
 def evaluate_bm25(rank_results,the_topic):
     temp_file = tempfile.NamedTemporaryFile(delete=False).name
     write_eval_file(rank_results, temp_file)
-    bm25_rank_score=EvalFunction.eval(['-c', '-m', 'ndcg_cut.10', the_topic, temp_file])
+    bm25_rank_score=EvalFunction.eval(['-c', '-m', 'map', the_topic, temp_file])
     return bm25_rank_score
 
 # json load function

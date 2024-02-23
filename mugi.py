@@ -39,7 +39,7 @@ def parse_args():
     # dense retrieval setting
     parser.add_argument('--rank_model', type=str, default='sentence-transformers/all-mpnet-base-v2', help='Text emebdding model ')
     parser.add_argument('--dense_topk', type=int, default=100, help='dense retrieved topk documents')
-    parser.add_argument('--mode', type=str, choices=['query', 'alternate', 'concat','qg'],required=True, help='whether to use generated reference')
+    parser.add_argument('--mode', type=str, choices=['query', 'alternate', 'concat','qg'], default='concat', help='whether to use generated reference')
     parser.add_argument('--test', action='store_true', help='for fast code test purpose')
     
     args = parser.parse_args()
@@ -78,7 +78,7 @@ def generate_pseudo_references(language_model_name: str, topics: Dict[str, Dict[
             for _ in range(generated_document_num):
                 output = language_model.get_response(message)
                 topics[key][gen_key].append(output)
-    return topics, 'gen_cand_gpt4' if 'gpt' in language_model_name else gen_key
+    return topics, f'gen_cand_4' if 'gpt' in language_model_name else gen_key
 
 def bm25_mugi(args, topics, searcher, qrels, gen_key):
     """
@@ -227,7 +227,7 @@ if __name__ == "__main__":
     args = parse_args()
     assert (args.repeat_times and not args.adaptive_times) or (not args.repeat_times and args.adaptive_times), "only assign times or adaptive_times"
     utils.display_args(args)
-    data_list = ['dl20', 'dl19', 'covid', 'touche', 'dbpedia', 'scifact', 'signal', 'news', 'robust04']
+    data_list = ['dl20', 'dl19', 'covid', 'nfc' ,'touche', 'dbpedia', 'scifact', 'signal', 'news', 'robust04']
     main(args)
 
     
