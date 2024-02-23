@@ -10,7 +10,9 @@ This project aims to explore generated documents for enhanced IR with LLMs. We e
 - **[2024.01.12]** Our paper is now available at https://arxiv.org/abs/2401.06311
 
 ## Quick example
+
 Install requirements
+
 ```python
 pip install -r requirements.txt
 ```
@@ -67,8 +69,8 @@ for key in topics:
       topics[key]['enhanced_query'] = (query + ' ')*repetition_times + gen_ref
 bm25_rank_results = run_retriever_mugi(topics, searcher, qrels, k=100)
 # eval nDCG@10
-rank_score=utils.evaluate_bm25(bm25_rank_results,'dl19-passage')
-print(rank_score)
+bm25_rank_score=utils.evaluate_bm25(bm25_rank_results,'dl19-passage')
+print(bm25_rank_score)
 ```
 
 or **re-rank using dense retrieval models**:
@@ -76,7 +78,7 @@ or **re-rank using dense retrieval models**:
 ```python
 from model import get_language_model, get_reranker
 reranker_model = get_reranker(model_name = 'all-mpnet-base-v2', mode = 'concat')
-rerank_result = reranker_model.rerank(bm25_rank_results,100)
+rerank_result = reranker_model.rerank(bm25_rank_results,'gen_cand_gpt35',100,use_enhanced_query=True)
 rerank_score = utils.evalute_dict(rerank_result,'dl19-passage')
 print(rerank_score)
 ```
@@ -84,13 +86,26 @@ print(rerank_score)
 ## Evaluation on Benchmarks
 
 ```python
-bash download.sh   # Download generated documents  
-python mugi.py --mode concat # run mugi pipeline on all datasets, could modify data_list in mugi.py for spefic dataset
+bash download.sh   # Download GPT generated documents  
 ```
+
+We have 4 `irmode` of applying MuGI including `['mugisparse','rerank','mugirerank','mugipipeline']`, to run MuGI:
+
+```python
+python mugi.py --llm gpt --irmode $irmode 
+```
+
+To **generated refences with open-source LLMs**, selectiong  `llm` in `[01-ai/Yi-34B-Chat-4bits, 01-ai/Yi-6B-Chat-4bits, Qwen/Qwen1.5-7B-Chat-AWQ, Qwen/Qwen1.5-14B-Chat-AWQ, Qwen/Qwen1.5-72B-Chat-AWQ]*`,and run
+
+```
+python mugi.py --llm $llm --irmode $irmode 
+```
+
+------
 
 Below are the results (average nDCG@10) of our preliminary experiments 
 
-### ![Screenshot 2024-01-22 at 12.56.51 PM](https://p.ipic.vip/4fkjyz.png)
+### ![Screenshot 2024-01-22 at 12.56.51 PM](https://github.com/lezhang7/Retrieval_MuGI/asset/performance.png)
 
 ## Cite
 

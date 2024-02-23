@@ -7,7 +7,7 @@ FILE_ID="1kZ0rKbTGkGfE67zGSLmMaVIfjEHrOYHK"
 URL="https://drive.google.com/uc?id=$FILE_ID"
 
 # Download directory
-DOWNLOAD_DIR="exp"
+DOWNLOAD_DIR="exp/gpt"
 
 # Create download directory if it doesn't exist
 mkdir -p $DOWNLOAD_DIR
@@ -22,3 +22,6 @@ if [ -f "$DOWNLOAD_DIR/bm25_top100_results.tar.gz" ]; then
 else
     echo "Failed to download the file or the file is not a valid tar.gz."
 fi
+
+# Remove the tar.gz file
+rm -f $DOWNLOAD_DIR/bm25_top100_results.tar.gz
