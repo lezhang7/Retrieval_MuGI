@@ -90,6 +90,7 @@ print(rerank_score)
 ## Evaluation on Benchmarks
 
 ```python
+pip install --upgrade --no-cache-dir gdown # must update gdown to avoid bugs, thanks to https://github.com/wkentaro/gdown/issues/146
 bash download.sh   # Download GPT generated documents  
 ```
 

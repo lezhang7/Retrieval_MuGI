@@ -1,5 +1,5 @@
 #!/bin/bash
-
+pip install --upgrade --no-cache-dir gdown
 # Google Drive File ID
 FILE_ID="1kZ0rKbTGkGfE67zGSLmMaVIfjEHrOYHK"
 
