@@ -1,6 +1,6 @@
 # MuGI: Multi-Text Generation Intergration for IR
 
-Code for paper [MuGI: Enhancing Information Retrieval through Multi-Text Generation Intergration with Large Language Models](https://arxiv.org/abs/2401.06311)
+Code for paper [Exploring the Best Practices of Query Expansion with Large Language Models]([https://arxiv.org/abs/2401.06311](https://aclanthology.org/2024.findings-emnlp.103/))
 
 This project aims to explore generated documents for enhanced IR with LLMs. We enhance BM25 to surpass strong dense retriever on many datasets.
 
@@ -111,12 +111,10 @@ python mugi.py --llm $llm --irmode $irmode
 ## Cite
 
 ```latex
-@misc{zhang2024mugi,
-      title={MuGI: Enhancing Information Retrieval through Multi-Text Generation Integration with Large Language Models}, 
-      author={Le Zhang and Qian Yang and Yihong Wu},
-      year={2024},
-      eprint={2401.06311},
-      archivePrefix={arXiv},
-      primaryClass={cs.IR}
+@article{zhang2024exploring,
+  title={Exploring the Best Practices of Query Expansion with Large Language Models},
+  author={Zhang, Le and Wu, Yihong and Yang, Qian and Nie, Jian-Yun},
+  journal={arXiv preprint arXiv:2401.06311},
+  year={2024}
 }
 ```
