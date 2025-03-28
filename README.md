@@ -88,6 +88,7 @@ print(rerank_score)
 ```
 
 ## Evaluation on Benchmarks
+Data released at: [🤗 Hub](https://huggingface.co/datasets/le723z/mugi/tree/main)
 
 ```python
 pip install --upgrade --no-cache-dir gdown # must update gdown to avoid bugs, thanks to https://github.com/wkentaro/gdown/issues/146
